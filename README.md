@@ -22,6 +22,47 @@ g.V("Casablanca").In("<name>").All()
 g.V().Has("<name>", "Casablanca").All()
 
 g.V("<dani>").Tag("source").Out("<follows>").Tag("target").All()
+
+
+package main
+
+import (
+  "fmt"
+  "log"
+  
+  "github.com/cayleygraph/cayley"
+  "github.com/cayleygraph/cayley/quad"
+)
+
+func main() {
+  
+  store, err := cayley.NewMeoryGraph()
+  if err != nil {
+    log.Fatalln(err)
+  }
+  
+  store.AddQuad(quad.Make("phrase of the day", "is of course", "Hello", nil))
+  
+  p := cayley.StartPath(store, quad.String("phrase of the day")).Out(quad.String("is of course"))
+  
+  err = p.Iterate(nil).EachValue(nil, func(value quad.Value){
+    nativeValue := quad.NativeOf(value)
+    fmt.Println(nativeValue)
+  })
+  if err != nil {
+    log.Fatalln(err)
+  }
+}
+
+import _ "github.com/cayleygraph/cayley/graph/kv/bolt"
+
+import "github.com/cayleygraph/cayley/graph"
+
+func open() {
+  graph.InitQuadStore("bolt", path, nil)
+  
+  cayley.NewGraph("bolt", path, nil)
+}
 ```
 
 ```
